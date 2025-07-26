@@ -356,6 +356,7 @@
             border-radius: 20px;
             padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            height: 100%;
         }
 
         .pedals-telemetry {
@@ -363,35 +364,67 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            height: 100%;
         }
 
-        .pedal-graph {
+        .combined-graph {
             flex: 1;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
             padding: 10px;
             position: relative;
             overflow: hidden;
+            min-height: 0;
         }
 
-        .pedal-graph-title {
+        .combined-graph-title {
             font-size: 0.9rem;
             font-weight: bold;
             margin-bottom: 5px;
             text-align: center;
+            color: #fff;
         }
 
-        .gas-graph .pedal-graph-title {
+        .graph-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 5px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+
+        .legend-gas {
             color: #00ff88;
         }
 
-        .brake-graph .pedal-graph-title {
+        .legend-brake {
             color: #ff4444;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-gas .legend-dot {
+            background: #00ff88;
+        }
+
+        .legend-brake .legend-dot {
+            background: #ff4444;
         }
 
         .graph-canvas {
             width: 100%;
-            height: 60px;
+            height: 100%;
+            min-height: 80px;
             background: rgba(0, 0, 0, 0.5);
             border-radius: 5px;
             position: relative;
@@ -916,19 +949,38 @@
                 gap: 10px;
                 padding: 15px;
                 flex-direction: column;
+                height: 100%;
             }
 
             .pedals-telemetry {
                 flex-direction: row;
                 gap: 5px;
+                height: 100%;
             }
 
-            .pedal-graph {
+            .combined-graph {
                 padding: 8px;
+                flex: 1;
+                min-height: 0;
             }
 
             .graph-canvas {
-                height: 40px;
+                height: 100%;
+                min-height: 50px;
+            }
+
+            .graph-legend {
+                gap: 8px;
+                margin-bottom: 3px;
+            }
+
+            .legend-item {
+                font-size: 0.7rem;
+            }
+
+            .legend-dot {
+                width: 6px;
+                height: 6px;
             }
 
             .pedals-bars {
@@ -1354,25 +1406,25 @@
             <div class="fullscreen-bottom">
                 <!-- Pedals -->
                 <div class="fullscreen-pedals">
-                    <div class="card-header">Gas & Brake</div>
                     <div class="pedals-telemetry">
-                        <div class="pedal-graph">
-                            <div class="graph-title">Gas</div>
-                            <canvas class="graph-canvas" id="gasGraph" width="80" height="60"></canvas>
-                        </div>
-                        <div class="pedal-graph">
-                            <div class="graph-title">Brake</div>
-                            <canvas class="graph-canvas" id="brakeGraph" width="80" height="60"></canvas>
+                        <div class="combined-graph">
+                            <div class="graph-legend">
+                                <div class="legend-item legend-gas">
+                                    <div class="legend-dot"></div>
+                                </div>
+                                <div class="legend-item legend-brake">
+                                    <div class="legend-dot"></div>
+                                </div>
+                            </div>
+                            <canvas class="graph-canvas" id="combinedGraph" width="120" height="80"></canvas>
                         </div>
                         <div class="pedals-bars">
                             <div class="pedal-bar">
                                 <div class="pedal-bar-fill gas-fill" id="gasBar"></div>
-                                <div class="pedal-bar-label">Gas</div>
                                 <div class="pedal-bar-value" id="gasBarValue">0%</div>
                             </div>
                             <div class="pedal-bar">
                                 <div class="pedal-bar-fill brake-fill" id="brakeBar"></div>
-                                <div class="pedal-bar-label">Brake</div>
                                 <div class="pedal-bar-value" id="brakeBarValue">0%</div>
                             </div>
                         </div>
@@ -1415,8 +1467,8 @@
         // Telemetry graph data
         let gasHistory = [];
         let brakeHistory = [];
-        let gasGraphCanvas, brakeGraphCanvas;
-        let gasGraphCtx, brakeGraphCtx;
+        let combinedGraphCanvas;
+        let combinedGraphCtx;
         const maxHistoryPoints = 50;
 
         // Fetch host information from server
@@ -1477,51 +1529,7 @@
             return (rawGear - 1).toString(); // Gear 2 becomes 1, 3 becomes 2, etc.
         }
 
-        // Toggle fullscreen mode
-        function toggleFullscreen() {
-            const fullscreenMode = document.getElementById('fullscreenMode');
-            isFullscreenMode = !isFullscreenMode;
-            
-            if (isFullscreenMode) {
-                fullscreenMode.classList.add('active');
-                console.log('🏁 Entering fullscreen racing mode');
-                
-                // Mobile-specific fullscreen handling
-                if (isMobileDevice()) {
-                    enterMobileFullscreen();
-                } else {
-                    // Request browser fullscreen if available for desktop
-                    if (document.documentElement.requestFullscreen) {
-                        document.documentElement.requestFullscreen().catch(e => {
-                            console.log('Browser fullscreen not available:', e);
-                        });
-                    }
-                }
-                
-                // Listen for orientation changes on mobile
-                if (isMobileDevice()) {
-                    window.addEventListener('orientationchange', handleOrientationChange);
-                    // Check orientation immediately
-                    setTimeout(checkOrientation, 100);
-                }
-            } else {
-                fullscreenMode.classList.remove('active');
-                console.log('📱 Exiting fullscreen mode');
-                
-                // Remove mobile event listeners
-                if (isMobileDevice()) {
-                    window.removeEventListener('orientationchange', handleOrientationChange);
-                    exitMobileFullscreen();
-                }
-                
-                // Exit browser fullscreen
-                if (document.exitFullscreen) {
-                    document.exitFullscreen().catch(e => {
-                        console.log('Error exiting fullscreen:', e);
-                    });
-                }
-            }
-        }
+        // Toggle fullscreen mode - function defined later with graph initialization
 
         // Check if device is mobile
         function isMobileDevice() {
@@ -1905,18 +1913,18 @@
 
         // Initialize telemetry graphs
         function initTelemetryGraphs() {
-            gasGraphCanvas = document.getElementById('gasGraph');
-            brakeGraphCanvas = document.getElementById('brakeGraph');
+            combinedGraphCanvas = document.getElementById('combinedGraph');
             
-            if (gasGraphCanvas && brakeGraphCanvas) {
-                gasGraphCtx = gasGraphCanvas.getContext('2d');
-                brakeGraphCtx = brakeGraphCanvas.getContext('2d');
+            if (combinedGraphCanvas) {
+                combinedGraphCtx = combinedGraphCanvas.getContext('2d');
                 
-                // Set canvas size
-                gasGraphCanvas.width = 80;
-                gasGraphCanvas.height = 60;
-                brakeGraphCanvas.width = 80;
-                brakeGraphCanvas.height = 60;
+                // Set canvas size based on container
+                const container = combinedGraphCanvas.parentElement;
+                const containerRect = container.getBoundingClientRect();
+                const padding = 20; // Account for container padding
+                
+                combinedGraphCanvas.width = Math.max(120, containerRect.width - padding);
+                combinedGraphCanvas.height = Math.max(80, containerRect.height - padding - 40); // Account for legend
                 
                 // Initialize with empty data
                 gasHistory = new Array(maxHistoryPoints).fill(0);
@@ -1924,8 +1932,8 @@
             }
         }
 
-        // Draw telemetry graph
-        function drawTelemetryGraph(ctx, canvas, data, color) {
+        // Draw combined telemetry graph
+        function drawCombinedTelemetryGraph(ctx, canvas, gasData, brakeData) {
             if (!ctx || !canvas) return;
             
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1945,15 +1953,34 @@
                 ctx.stroke();
             }
             
-            // Draw data line
-            if (data.length > 1) {
-                ctx.strokeStyle = color;
+            // Draw gas data line (green)
+            if (gasData.length > 1) {
+                ctx.strokeStyle = '#00ff88';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
                 
-                for (let i = 0; i < data.length; i++) {
-                    const x = (canvas.width / (data.length - 1)) * i;
-                    const y = canvas.height - (data[i] * canvas.height);
+                for (let i = 0; i < gasData.length; i++) {
+                    const x = (canvas.width / (gasData.length - 1)) * i;
+                    const y = canvas.height - (gasData[i] * canvas.height);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+            }
+            
+            // Draw brake data line (red)
+            if (brakeData.length > 1) {
+                ctx.strokeStyle = '#ff4444';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                for (let i = 0; i < brakeData.length; i++) {
+                    const x = (canvas.width / (brakeData.length - 1)) * i;
+                    const y = canvas.height - (brakeData[i] * canvas.height);
                     
                     if (i === 0) {
                         ctx.moveTo(x, y);
@@ -1979,9 +2006,8 @@
                 brakeHistory.shift();
             }
             
-            // Draw graphs
-            drawTelemetryGraph(gasGraphCtx, gasGraphCanvas, gasHistory, '#00ff88');
-            drawTelemetryGraph(brakeGraphCtx, brakeGraphCanvas, brakeHistory, '#ff4444');
+            // Draw combined graph
+            drawCombinedTelemetryGraph(combinedGraphCtx, combinedGraphCanvas, gasHistory, brakeHistory);
             
             // Update vertical bars
             const gasBar = document.getElementById('gasBar');
@@ -2002,6 +2028,62 @@
 
         // Initialize graphs when DOM is ready
         setTimeout(initTelemetryGraphs, 100);
+        
+        // Re-initialize graphs when window resizes or fullscreen changes
+        window.addEventListener('resize', () => {
+            if (isFullscreenMode) {
+                setTimeout(initTelemetryGraphs, 100);
+            }
+        });
+        
+        // Re-initialize when entering fullscreen
+        function toggleFullscreen() {
+            const fullscreenMode = document.getElementById('fullscreenMode');
+            isFullscreenMode = !isFullscreenMode;
+            
+            if (isFullscreenMode) {
+                fullscreenMode.classList.add('active');
+                console.log('🏁 Entering fullscreen racing mode');
+                
+                // Re-initialize graphs for fullscreen
+                setTimeout(initTelemetryGraphs, 200);
+                
+                // Mobile-specific fullscreen handling
+                if (isMobileDevice()) {
+                    enterMobileFullscreen();
+                } else {
+                    // Request browser fullscreen if available for desktop
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen().catch(e => {
+                            console.log('Browser fullscreen not available:', e);
+                        });
+                    }
+                }
+                
+                // Listen for orientation changes on mobile
+                if (isMobileDevice()) {
+                    window.addEventListener('orientationchange', handleOrientationChange);
+                    // Check orientation immediately
+                    setTimeout(checkOrientation, 100);
+                }
+            } else {
+                fullscreenMode.classList.remove('active');
+                console.log('📱 Exiting fullscreen mode');
+                
+                // Remove mobile event listeners
+                if (isMobileDevice()) {
+                    window.removeEventListener('orientationchange', handleOrientationChange);
+                    exitMobileFullscreen();
+                }
+                
+                // Exit browser fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(e => {
+                        console.log('Error exiting fullscreen:', e);
+                    });
+                }
+            }
+        }
     </script>
 </body>
 </html>
