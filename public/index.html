@@ -699,26 +699,47 @@
                 display: none; /* Hide GEAR text */
             }
 
-            .fullscreen-rpm {
+            .fullscreen-gear .fullscreen-rpm {
                 background: transparent;
                 border: none;
                 padding: 0;
-                width: 100%;
+                width: 90%;
+                display: block; /* Ensure RPM is visible */
             }
 
-            .fullscreen-rpm-value {
+            .fullscreen-gear .fullscreen-rpm-value {
                 font-size: 1.8rem;
                 margin-bottom: 15px;
-                color: #00ff88;
+                color: #fff;
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
             }
 
-            .fullscreen-rpm-bar {
+            .fullscreen-gear .fullscreen-rpm-bar {
+                background: rgba(255, 255, 255, 0.2);
                 height: 30px;
                 width: 100%;
+                border-radius: 15px;
+                overflow: hidden;
+                position: relative;
             }
 
-            .fullscreen-rpm-text {
+            .fullscreen-gear .fullscreen-rpm-fill {
+                height: 100%;
+                background: linear-gradient(90deg, #00ff88, #ffaa00, #ff4444);
+                transition: width 0.1s ease;
+                border-radius: 15px;
+            }
+
+            .fullscreen-gear .fullscreen-rpm-text {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-weight: bold;
                 font-size: 0.9rem;
+                text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+                z-index: 1;
+                color: #fff;
             }
 
             .fullscreen-speed {
@@ -769,10 +790,6 @@
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 10px;
-            }
-
-            .fullscreen-rpm {
-                display: none; /* RPM is now inside gear card */
             }
 
             .fullscreen-pedals {
@@ -829,6 +846,11 @@
 
             .fullscreen-gear-value {
                 font-size: 6rem;
+            }
+
+            .fullscreen-gear .fullscreen-rpm {
+                width: 90%;
+                display: block;
             }
 
             .fullscreen-gear .fullscreen-rpm-value {
