@@ -127,16 +127,15 @@
             padding: 20px;
             display: grid;
             grid-template-areas: 
-                "gear gear gear"
-                "gforce speed info"
+                "gforce gear-rpm info"
                 "bottom bottom bottom";
-            grid-template-rows: 1fr 2fr 1fr;
+            grid-template-rows: 2fr 1fr;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 20px;
         }
 
         .fullscreen-gear {
-            grid-area: gear;
+            grid-area: gear-rpm;
             background: linear-gradient(135deg, #4ecdc4, #44a08d);
             border-radius: 20px;
             display: flex;
@@ -144,21 +143,68 @@
             justify-content: center;
             flex-direction: column;
             box-shadow: 0 15px 50px rgba(78, 205, 196, 0.4);
+            gap: 30px;
         }
 
         .fullscreen-gear-value {
-            font-size: 15rem;
+            font-size: 12rem;
             font-weight: bold;
             line-height: 1;
             text-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
             color: #fff;
+            margin: 0;
         }
 
         .fullscreen-gear-label {
-            font-size: 3rem;
-            opacity: 0.9;
-            margin-top: 20px;
-            letter-spacing: 3px;
+            display: none; /* Hide GEAR text */
+        }
+
+        .fullscreen-speed {
+            display: none; /* Hide separate speed display */
+        }
+
+        /* RPM inside gear card */
+        .fullscreen-gear .fullscreen-rpm {
+            background: transparent;
+            border: none;
+            padding: 0;
+            width: 80%;
+        }
+
+        .fullscreen-gear .fullscreen-rpm-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .fullscreen-gear .fullscreen-rpm-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 35px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .fullscreen-gear .fullscreen-rpm-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #ffaa00, #ff4444);
+            transition: width 0.1s ease;
+            border-radius: 20px;
+        }
+
+        .fullscreen-gear .fullscreen-rpm-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            font-size: 1rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            z-index: 1;
+            color: #fff;
         }
 
         .fullscreen-gforce {
@@ -257,7 +303,7 @@
         .fullscreen-bottom {
             grid-area: bottom;
             display: grid;
-            grid-template-columns: 2fr 1fr 2fr;
+            grid-template-columns: 1fr 1fr;
             gap: 20px;
         }
 
@@ -627,29 +673,56 @@
             .fullscreen-container {
                 padding: 10px;
                 grid-template-areas: 
-                    "gear speed info"
-                    "gforce bottom bottom";
-                grid-template-rows: 1fr 1fr;
+                    "gforce gear-rpm info"
+                    "bottom bottom bottom";
+                grid-template-rows: 2fr 1fr;
                 grid-template-columns: 1fr 1fr 1fr;
                 gap: 10px;
                 height: 100vh;
             }
 
             .fullscreen-gear {
-                grid-area: gear;
+                grid-area: gear-rpm;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 20px;
             }
 
             .fullscreen-gear-value {
-                font-size: 6rem;
+                font-size: 8rem;
+                margin: 0;
             }
 
             .fullscreen-gear-label {
-                font-size: 1.5rem;
-                margin-top: 10px;
+                display: none; /* Hide GEAR text */
+            }
+
+            .fullscreen-rpm {
+                background: transparent;
+                border: none;
+                padding: 0;
+                width: 100%;
+            }
+
+            .fullscreen-rpm-value {
+                font-size: 1.8rem;
+                margin-bottom: 15px;
+                color: #00ff88;
+            }
+
+            .fullscreen-rpm-bar {
+                height: 30px;
+                width: 100%;
+            }
+
+            .fullscreen-rpm-text {
+                font-size: 0.9rem;
             }
 
             .fullscreen-speed {
-                grid-area: speed;
+                display: none; /* Hide separate speed display */
             }
 
             .fullscreen-speed-value {
@@ -694,25 +767,12 @@
             .fullscreen-bottom {
                 grid-area: bottom;
                 display: grid;
-                grid-template-columns: 2fr 1fr 1fr;
+                grid-template-columns: 1fr 1fr;
                 gap: 10px;
             }
 
             .fullscreen-rpm {
-                padding: 15px;
-            }
-
-            .fullscreen-rpm-value {
-                font-size: 1.5rem;
-                margin-bottom: 10px;
-            }
-
-            .fullscreen-rpm-bar {
-                height: 25px;
-            }
-
-            .fullscreen-rpm-text {
-                font-size: 0.8rem;
+                display: none; /* RPM is now inside gear card */
             }
 
             .fullscreen-pedals {
@@ -761,18 +821,22 @@
                 padding: 5px;
                 gap: 8px;
                 grid-template-areas: 
-                    "gear speed"
+                    "gear-rpm gear-rpm"
                     "bottom bottom";
-                grid-template-rows: 1fr 1fr;
+                grid-template-rows: 2fr 1fr;
                 grid-template-columns: 1fr 1fr;
             }
 
             .fullscreen-gear-value {
-                font-size: 4rem;
+                font-size: 6rem;
             }
 
-            .fullscreen-speed-value {
-                font-size: 3rem;
+            .fullscreen-gear .fullscreen-rpm-value {
+                font-size: 1.2rem;
+            }
+
+            .fullscreen-gear .fullscreen-rpm-bar {
+                height: 20px;
             }
 
             .fullscreen-info {
@@ -784,12 +848,22 @@
             }
 
             .fullscreen-bottom {
-                grid-template-columns: 2fr 1fr;
+                grid-template-columns: 1fr 1fr;
                 gap: 8px;
             }
 
             .fullscreen-timing {
-                display: none; /* Hide timing on very small screens */
+                padding: 10px;
+            }
+
+            .fullscreen-timing-title {
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+
+            .timing-item-fullscreen {
+                font-size: 0.7rem;
+                margin-bottom: 5px;
             }
 
             .close-fullscreen {
@@ -1037,10 +1111,18 @@
         </div>
         
         <div class="fullscreen-container">
-            <!-- Priority 1: GEAR (Top, Largest) -->
+            <!-- Priority 1: GEAR + RPM Combined (Center, Largest) -->
             <div class="fullscreen-gear">
                 <div class="fullscreen-gear-value" id="fullscreenGear">N</div>
-                <div class="fullscreen-gear-label">GEAR</div>
+                
+                <!-- RPM integrated inside gear card -->
+                <div class="fullscreen-rpm">
+                    <div class="fullscreen-rpm-value" id="fullscreenRPM">0 RPM</div>
+                    <div class="fullscreen-rpm-bar">
+                        <div class="fullscreen-rpm-fill" id="fullscreenRPMBar" style="width: 0%"></div>
+                        <div class="fullscreen-rpm-text" id="fullscreenRPMText">0 / 8000</div>
+                    </div>
+                </div>
             </div>
 
             <!-- Priority 2: G-FORCES (Left) -->
@@ -1064,15 +1146,13 @@
                 </div>
             </div>
 
-            <!-- Priority 3: SPEED (Center) -->
-            <div class="fullscreen-speed">
-                <div class="fullscreen-speed-value" id="fullscreenSpeed">0</div>
-                <div class="fullscreen-speed-unit">KM/H</div>
-            </div>
-
-            <!-- Priority 4: Other Info (Right) -->
+            <!-- Priority 3: Other Info (Right) -->
             <div class="fullscreen-info">
                 <div class="fullscreen-info-title">📊 INFO</div>
+                <div class="info-item">
+                    <span class="info-item-label">Speed:</span>
+                    <span class="info-item-value" id="fullscreenSpeed">0 KM/H</span>
+                </div>
                 <div class="info-item">
                     <span class="info-item-label">Position:</span>
                     <span class="info-item-value" id="fullscreenPosition">1</span>
@@ -1097,15 +1177,6 @@
 
             <!-- Bottom Section -->
             <div class="fullscreen-bottom">
-                <!-- RPM -->
-                <div class="fullscreen-rpm">
-                    <div class="fullscreen-rpm-value" id="fullscreenRPM">0 RPM</div>
-                    <div class="fullscreen-rpm-bar">
-                        <div class="fullscreen-rpm-fill" id="fullscreenRPMBar" style="width: 0%"></div>
-                        <div class="fullscreen-rpm-text" id="fullscreenRPMText">0 / 8000</div>
-                    </div>
-                </div>
-
                 <!-- Pedals -->
                 <div class="fullscreen-pedals">
                     <div class="fullscreen-pedal gas">
@@ -1331,8 +1402,8 @@
             document.getElementById('fullscreenGVertical').textContent = (data.accG_vertical || 0).toFixed(2) + 'g';
             document.getElementById('fullscreenSteering').textContent = Math.round((data.steer || 0) * 57.3) + '°';
 
-            // Priority 3: Speed
-            document.getElementById('fullscreenSpeed').textContent = Math.round(data.speed_Kmh || 0);
+            // Priority 3: Speed in info section
+            document.getElementById('fullscreenSpeed').textContent = Math.round(data.speed_Kmh || 0) + ' KM/H';
 
             // Priority 4: Other Info
             document.getElementById('fullscreenPosition').textContent = data.position || 1;
