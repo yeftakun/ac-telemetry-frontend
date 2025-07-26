@@ -350,8 +350,128 @@
 
         .fullscreen-pedals {
             display: flex;
+            flex-direction: row;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pedals-telemetry {
+            flex: 1;
+            display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
+        }
+
+        .pedal-graph {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pedal-graph-title {
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .gas-graph .pedal-graph-title {
+            color: #00ff88;
+        }
+
+        .brake-graph .pedal-graph-title {
+            color: #ff4444;
+        }
+
+        .graph-canvas {
+            width: 100%;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .graph-line {
+            position: absolute;
+            bottom: 0;
+            width: 2px;
+            transition: height 0.1s ease;
+        }
+
+        .gas-line {
+            background: #00ff88;
+        }
+
+        .brake-line {
+            background: #ff4444;
+        }
+
+        .pedals-bars {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        .pedal-bar-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pedal-bar {
+            width: 40px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .pedal-bar-fill {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            border-radius: 18px;
+            transition: height 0.1s ease;
+        }
+
+        .gas-bar .pedal-bar-fill {
+            background: linear-gradient(to top, #00ff88, #00cc66);
+        }
+
+        .brake-bar .pedal-bar-fill {
+            background: linear-gradient(to top, #ff4444, #ff6666);
+        }
+
+        .pedal-bar-label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .gas-bar .pedal-bar-label {
+            color: #00ff88;
+        }
+
+        .brake-bar .pedal-bar-label {
+            color: #ff4444;
+        }
+
+        .pedal-bar-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 5px;
         }
 
         .fullscreen-pedal {
@@ -794,6 +914,39 @@
 
             .fullscreen-pedals {
                 gap: 10px;
+                padding: 15px;
+                flex-direction: column;
+            }
+
+            .pedals-telemetry {
+                flex-direction: row;
+                gap: 5px;
+            }
+
+            .pedal-graph {
+                padding: 8px;
+            }
+
+            .graph-canvas {
+                height: 40px;
+            }
+
+            .pedals-bars {
+                min-width: auto;
+                gap: 10px;
+            }
+
+            .pedal-bar {
+                width: 30px;
+                height: 80px;
+            }
+
+            .pedal-bar-label {
+                font-size: 0.8rem;
+            }
+
+            .pedal-bar-value {
+                font-size: 1rem;
             }
 
             .fullscreen-pedal {
@@ -1201,13 +1354,28 @@
             <div class="fullscreen-bottom">
                 <!-- Pedals -->
                 <div class="fullscreen-pedals">
-                    <div class="fullscreen-pedal gas">
-                        <div class="fullscreen-pedal-label">GAS</div>
-                        <div class="fullscreen-pedal-value" id="fullscreenGas">0%</div>
-                    </div>
-                    <div class="fullscreen-pedal brake">
-                        <div class="fullscreen-pedal-label">BRAKE</div>
-                        <div class="fullscreen-pedal-value" id="fullscreenBrake">0%</div>
+                    <div class="card-header">Gas & Brake</div>
+                    <div class="pedals-telemetry">
+                        <div class="pedal-graph">
+                            <div class="graph-title">Gas</div>
+                            <canvas class="graph-canvas" id="gasGraph" width="80" height="60"></canvas>
+                        </div>
+                        <div class="pedal-graph">
+                            <div class="graph-title">Brake</div>
+                            <canvas class="graph-canvas" id="brakeGraph" width="80" height="60"></canvas>
+                        </div>
+                        <div class="pedals-bars">
+                            <div class="pedal-bar">
+                                <div class="pedal-bar-fill gas-fill" id="gasBar"></div>
+                                <div class="pedal-bar-label">Gas</div>
+                                <div class="pedal-bar-value" id="gasBarValue">0%</div>
+                            </div>
+                            <div class="pedal-bar">
+                                <div class="pedal-bar-fill brake-fill" id="brakeBar"></div>
+                                <div class="pedal-bar-label">Brake</div>
+                                <div class="pedal-bar-value" id="brakeBarValue">0%</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -1243,6 +1411,13 @@
         let lastFpsTime = performance.now();
         let isFullscreenMode = false;
         let hostInfo = null;
+        
+        // Telemetry graph data
+        let gasHistory = [];
+        let brakeHistory = [];
+        let gasGraphCanvas, brakeGraphCanvas;
+        let gasGraphCtx, brakeGraphCtx;
+        const maxHistoryPoints = 50;
 
         // Fetch host information from server
         async function fetchHostInfo() {
@@ -1441,9 +1616,10 @@
             document.getElementById('fullscreenRPMBar').style.width = rpmPercent + '%';
             document.getElementById('fullscreenRPMText').textContent = `${rpm} / 8000`;
 
-            // Pedals
-            document.getElementById('fullscreenGas').textContent = Math.round((data.gas || 0) * 100) + '%';
-            document.getElementById('fullscreenBrake').textContent = Math.round((data.brake || 0) * 100) + '%';
+            // Pedals - Update new pedal telemetry system
+            const gasValue = data.gas || 0;
+            const brakeValue = data.brake || 0;
+            updatePedalTelemetry(gasValue, brakeValue);
 
             // Timing
             document.getElementById('fullscreenCurrentLap').textContent = formatTime(data.lapTime);
@@ -1726,6 +1902,106 @@
                 }
             }
         });
+
+        // Initialize telemetry graphs
+        function initTelemetryGraphs() {
+            gasGraphCanvas = document.getElementById('gasGraph');
+            brakeGraphCanvas = document.getElementById('brakeGraph');
+            
+            if (gasGraphCanvas && brakeGraphCanvas) {
+                gasGraphCtx = gasGraphCanvas.getContext('2d');
+                brakeGraphCtx = brakeGraphCanvas.getContext('2d');
+                
+                // Set canvas size
+                gasGraphCanvas.width = 80;
+                gasGraphCanvas.height = 60;
+                brakeGraphCanvas.width = 80;
+                brakeGraphCanvas.height = 60;
+                
+                // Initialize with empty data
+                gasHistory = new Array(maxHistoryPoints).fill(0);
+                brakeHistory = new Array(maxHistoryPoints).fill(0);
+            }
+        }
+
+        // Draw telemetry graph
+        function drawTelemetryGraph(ctx, canvas, data, color) {
+            if (!ctx || !canvas) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = (canvas.height / 4) * i;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Draw data line
+            if (data.length > 1) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                
+                for (let i = 0; i < data.length; i++) {
+                    const x = (canvas.width / (data.length - 1)) * i;
+                    const y = canvas.height - (data[i] * canvas.height);
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+            }
+        }
+
+        // Update pedal telemetry
+        function updatePedalTelemetry(gasValue, brakeValue) {
+            // Add new values to history
+            gasHistory.push(gasValue);
+            brakeHistory.push(brakeValue);
+            
+            // Keep only the last maxHistoryPoints
+            if (gasHistory.length > maxHistoryPoints) {
+                gasHistory.shift();
+            }
+            if (brakeHistory.length > maxHistoryPoints) {
+                brakeHistory.shift();
+            }
+            
+            // Draw graphs
+            drawTelemetryGraph(gasGraphCtx, gasGraphCanvas, gasHistory, '#00ff88');
+            drawTelemetryGraph(brakeGraphCtx, brakeGraphCanvas, brakeHistory, '#ff4444');
+            
+            // Update vertical bars
+            const gasBar = document.getElementById('gasBar');
+            const brakeBar = document.getElementById('brakeBar');
+            const gasBarValue = document.getElementById('gasBarValue');
+            const brakeBarValue = document.getElementById('brakeBarValue');
+            
+            if (gasBar && brakeBar && gasBarValue && brakeBarValue) {
+                const gasPercent = Math.round(gasValue * 100);
+                const brakePercent = Math.round(brakeValue * 100);
+                
+                gasBar.style.height = gasPercent + '%';
+                brakeBar.style.height = brakePercent + '%';
+                gasBarValue.textContent = gasPercent + '%';
+                brakeBarValue.textContent = brakePercent + '%';
+            }
+        }
+
+        // Initialize graphs when DOM is ready
+        setTimeout(initTelemetryGraphs, 100);
     </script>
 </body>
 </html>
