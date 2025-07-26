@@ -63,6 +63,40 @@ app.get('/api/connection', async (req, res) => {
     }
 });
 
+// API endpoint untuk mendapatkan informasi host
+app.get('/api/host-info', (req, res) => {
+    res.json({
+        frontendPort: PORT,
+        frontendHost: `localhost:${PORT}`,
+        acApiBase: AC_API_BASE,
+        acApiHost: AC_API_BASE.replace('http://', '').replace('https://', ''),
+        serverInfo: `Express.js Server | localhost:${PORT} → ${AC_API_BASE.replace('http://', '').replace('https://', '')}`,
+        timestamp: new Date().toISOString()
+    });
+});
+
+// API endpoint untuk konfigurasi lengkap
+app.get('/api/config', (req, res) => {
+    res.json({
+        server: {
+            port: PORT,
+            host: 'localhost',
+            fullUrl: `http://localhost:${PORT}`
+        },
+        acApi: {
+            baseUrl: AC_API_BASE,
+            host: AC_API_BASE.replace('http://', '').replace('https://', ''),
+            endpoints: {
+                data: `${AC_API_BASE}/data`,
+                start: `${AC_API_BASE}/start`,
+                connection: `${AC_API_BASE}/checkConnection`
+            }
+        },
+        displayInfo: `Express.js Server | localhost:${PORT} → ${AC_API_BASE.replace('http://', '').replace('https://', '')}`,
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ 

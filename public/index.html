@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏎️ AC Telemetry Live Dashboard</title>
+    <title>AC Telemetry</title>
     <style>
         * {
             margin: 0;
@@ -110,6 +110,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
+            height: calc(var(--vh, 1vh) * 100); /* Use custom viewport height for mobile */
             background: linear-gradient(135deg, #0a0a0a, #1a1a2e);
             z-index: 9999;
             display: none;
@@ -620,6 +621,267 @@
                 font-size: 3rem;
             }
         }
+
+        /* Mobile Landscape Fullscreen Optimizations */
+        @media (max-width: 900px) and (orientation: landscape) {
+            .fullscreen-container {
+                padding: 10px;
+                grid-template-areas: 
+                    "gear speed info"
+                    "gforce bottom bottom";
+                grid-template-rows: 1fr 1fr;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 10px;
+                height: 100vh;
+            }
+
+            .fullscreen-gear {
+                grid-area: gear;
+            }
+
+            .fullscreen-gear-value {
+                font-size: 6rem;
+            }
+
+            .fullscreen-gear-label {
+                font-size: 1.5rem;
+                margin-top: 10px;
+            }
+
+            .fullscreen-speed {
+                grid-area: speed;
+            }
+
+            .fullscreen-speed-value {
+                font-size: 4rem;
+            }
+
+            .fullscreen-speed-unit {
+                font-size: 1.2rem;
+                margin-top: 5px;
+            }
+
+            .fullscreen-info {
+                grid-area: info;
+                padding: 15px;
+            }
+
+            .fullscreen-info-title {
+                font-size: 1.2rem;
+                margin-bottom: 15px;
+            }
+
+            .info-item {
+                font-size: 0.9rem;
+                margin-bottom: 8px;
+            }
+
+            .fullscreen-gforce {
+                grid-area: gforce;
+                padding: 15px;
+            }
+
+            .fullscreen-gforce-title {
+                font-size: 1.2rem;
+                margin-bottom: 15px;
+            }
+
+            .gforce-item {
+                font-size: 0.9rem;
+                margin-bottom: 10px;
+            }
+
+            .fullscreen-bottom {
+                grid-area: bottom;
+                display: grid;
+                grid-template-columns: 2fr 1fr 1fr;
+                gap: 10px;
+            }
+
+            .fullscreen-rpm {
+                padding: 15px;
+            }
+
+            .fullscreen-rpm-value {
+                font-size: 1.5rem;
+                margin-bottom: 10px;
+            }
+
+            .fullscreen-rpm-bar {
+                height: 25px;
+            }
+
+            .fullscreen-rpm-text {
+                font-size: 0.8rem;
+            }
+
+            .fullscreen-pedals {
+                gap: 10px;
+            }
+
+            .fullscreen-pedal {
+                padding: 10px;
+            }
+
+            .fullscreen-pedal-label {
+                font-size: 0.8rem;
+                margin-bottom: 5px;
+            }
+
+            .fullscreen-pedal-value {
+                font-size: 1.5rem;
+            }
+
+            .fullscreen-timing {
+                padding: 15px;
+            }
+
+            .fullscreen-timing-title {
+                font-size: 1rem;
+                margin-bottom: 10px;
+            }
+
+            .timing-item-fullscreen {
+                font-size: 0.8rem;
+                margin-bottom: 8px;
+            }
+
+            .close-fullscreen {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Very Small Mobile Devices */
+        @media (max-width: 600px) and (orientation: landscape) {
+            .fullscreen-container {
+                padding: 5px;
+                gap: 8px;
+                grid-template-areas: 
+                    "gear speed"
+                    "bottom bottom";
+                grid-template-rows: 1fr 1fr;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .fullscreen-gear-value {
+                font-size: 4rem;
+            }
+
+            .fullscreen-speed-value {
+                font-size: 3rem;
+            }
+
+            .fullscreen-info {
+                display: none; /* Hide on very small screens */
+            }
+
+            .fullscreen-gforce {
+                display: none; /* Hide on very small screens */
+            }
+
+            .fullscreen-bottom {
+                grid-template-columns: 2fr 1fr;
+                gap: 8px;
+            }
+
+            .fullscreen-timing {
+                display: none; /* Hide timing on very small screens */
+            }
+
+            .close-fullscreen {
+                top: 10px;
+                right: 10px;
+                width: 35px;
+                height: 35px;
+                font-size: 1.2rem;
+            }
+        }
+
+        /* Touch-friendly improvements for mobile */
+        @media (max-width: 900px) {
+            .btn {
+                padding: 15px 25px;
+                font-size: 1rem;
+                min-height: 44px; /* iOS touch target minimum */
+                margin: 5px;
+            }
+
+            .close-fullscreen {
+                min-width: 44px;
+                min-height: 44px;
+            }
+
+            /* Prevent zoom on double tap */
+            .fullscreen-mode * {
+                touch-action: manipulation;
+            }
+
+            /* Improve touch scrolling */
+            .fullscreen-mode {
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: none;
+            }
+        }
+
+        /* Prevent text selection on mobile for better UX */
+        .fullscreen-mode {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* Portrait mode warning for mobile */
+        .portrait-warning {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.95);
+            color: #fff;
+            z-index: 10001;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .portrait-warning h2 {
+            font-size: 2rem;
+            color: #ff6b6b;
+            margin-bottom: 20px;
+        }
+
+        .portrait-warning p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .rotate-icon {
+            font-size: 4rem;
+            margin: 20px 0;
+            animation: rotate 2s infinite linear;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 900px) and (orientation: portrait) {
+            .fullscreen-mode.active .portrait-warning {
+                display: flex;
+            }
+        }
     </style>
 </head>
 <body>
@@ -628,8 +890,8 @@
 
     <div class="container">
         <div class="header">
-            <h1>⚡ ASSETTO CORSA LIVE TELEMETRY ⚡</h1>
-            <div class="server-info">Express.js Server | localhost:3000 → localhost:8080</div>
+            <h1>AC TELEMETRY</h1>
+            <div class="server-info">Loading server info...</div>
             <div id="connectionStatus" class="connection-status disconnected">
                 DISCONNECTED
             </div>
@@ -766,6 +1028,14 @@
     <div class="fullscreen-mode" id="fullscreenMode">
         <button class="close-fullscreen" onclick="toggleFullscreen()">✕</button>
         
+        <!-- Portrait Warning for Mobile -->
+        <div class="portrait-warning">
+            <h2>📱 Rotate Your Device</h2>
+            <div class="rotate-icon">🔄</div>
+            <p>For the best racing experience, please rotate your device to landscape mode.</p>
+            <p style="font-size: 0.9rem; opacity: 0.6;">This fullscreen dashboard is optimized for landscape viewing.</p>
+        </div>
+        
         <div class="fullscreen-container">
             <!-- Priority 1: GEAR (Top, Largest) -->
             <div class="fullscreen-gear">
@@ -879,6 +1149,58 @@
         let fpsCounter = 0;
         let lastFpsTime = performance.now();
         let isFullscreenMode = false;
+        let hostInfo = null;
+
+        // Fetch host information from server
+        async function fetchHostInfo() {
+            try {
+                const response = await fetch('/api/host-info');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                hostInfo = await response.json();
+                
+                // Update server info display
+                const serverInfoElement = document.querySelector('.server-info');
+                if (serverInfoElement && hostInfo) {
+                    serverInfoElement.textContent = hostInfo.serverInfo;
+                    serverInfoElement.title = `Frontend: ${hostInfo.frontendHost} | AC API: ${hostInfo.acApiHost}`;
+                }
+                
+                console.log('📡 Host info loaded:', hostInfo);
+                return true;
+            } catch (error) {
+                console.error('❌ Failed to fetch host info:', error);
+                
+                // Update UI to show error
+                const serverInfoElement = document.querySelector('.server-info');
+                if (serverInfoElement) {
+                    serverInfoElement.textContent = 'Server info unavailable';
+                    serverInfoElement.title = 'Failed to load server configuration';
+                }
+                
+                // Fallback to default
+                hostInfo = {
+                    serverInfo: 'Express.js Server | Configuration Error',
+                    frontendHost: 'localhost:3000',
+                    acApiHost: 'unknown'
+                };
+                return false;
+            }
+        }
+
+        // Refresh host info (can be called manually)
+        async function refreshHostInfo() {
+            console.log('🔄 Refreshing host info...');
+            const success = await fetchHostInfo();
+            if (success) {
+                console.log('✅ Host info refreshed successfully');
+            } else {
+                console.log('❌ Failed to refresh host info');
+            }
+            return success;
+        }
 
         // Function to convert raw gear data to display format
         function formatGear(rawGear) {
@@ -896,21 +1218,102 @@
                 fullscreenMode.classList.add('active');
                 console.log('🏁 Entering fullscreen racing mode');
                 
-                // Request browser fullscreen if available
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen().catch(e => {
-                        console.log('Browser fullscreen not available:', e);
-                    });
+                // Mobile-specific fullscreen handling
+                if (isMobileDevice()) {
+                    enterMobileFullscreen();
+                } else {
+                    // Request browser fullscreen if available for desktop
+                    if (document.documentElement.requestFullscreen) {
+                        document.documentElement.requestFullscreen().catch(e => {
+                            console.log('Browser fullscreen not available:', e);
+                        });
+                    }
+                }
+                
+                // Listen for orientation changes on mobile
+                if (isMobileDevice()) {
+                    window.addEventListener('orientationchange', handleOrientationChange);
+                    // Check orientation immediately
+                    setTimeout(checkOrientation, 100);
                 }
             } else {
                 fullscreenMode.classList.remove('active');
                 console.log('📱 Exiting fullscreen mode');
+                
+                // Remove mobile event listeners
+                if (isMobileDevice()) {
+                    window.removeEventListener('orientationchange', handleOrientationChange);
+                    exitMobileFullscreen();
+                }
                 
                 // Exit browser fullscreen
                 if (document.exitFullscreen) {
                     document.exitFullscreen().catch(e => {
                         console.log('Error exiting fullscreen:', e);
                     });
+                }
+            }
+        }
+
+        // Check if device is mobile
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                   window.innerWidth <= 900;
+        }
+
+        // Handle mobile fullscreen
+        function enterMobileFullscreen() {
+            // Hide browser UI elements
+            document.body.style.overflow = 'hidden';
+            
+            // Try to hide address bar on mobile browsers
+            setTimeout(() => {
+                window.scrollTo(0, 1);
+            }, 100);
+            
+            // Request screen lock to landscape if available
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(e => {
+                    console.log('Screen orientation lock not supported:', e);
+                });
+            }
+            
+            console.log('📱 Mobile fullscreen mode enabled');
+        }
+
+        // Exit mobile fullscreen
+        function exitMobileFullscreen() {
+            document.body.style.overflow = '';
+            
+            // Unlock screen orientation if available
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+            }
+            
+            console.log('📱 Mobile fullscreen mode disabled');
+        }
+
+        // Handle orientation change
+        function handleOrientationChange() {
+            setTimeout(checkOrientation, 500); // Delay to allow orientation to complete
+        }
+
+        // Check current orientation and show/hide warning
+        function checkOrientation() {
+            if (!isFullscreenMode || !isMobileDevice()) return;
+            
+            const isPortrait = window.innerHeight > window.innerWidth;
+            const portraitWarning = document.querySelector('.portrait-warning');
+            
+            if (isPortrait) {
+                console.log('📱 Portrait mode detected - showing rotation warning');
+                if (portraitWarning) {
+                    portraitWarning.style.display = 'flex';
+                }
+            } else {
+                console.log('📱 Landscape mode detected - hiding rotation warning');
+                if (portraitWarning) {
+                    portraitWarning.style.display = 'none';
                 }
             }
         }
@@ -971,6 +1374,9 @@
         async function connectToAC() {
             try {
                 console.log('🔌 Connecting to Assetto Corsa via Express proxy...');
+                if (hostInfo) {
+                    console.log(`📡 Using configuration: ${hostInfo.serverInfo}`);
+                }
                 
                 // Start connection
                 await fetch('/api/start', { method: 'POST' });
@@ -1115,25 +1521,88 @@
         // Start updates with high frequency
         function startUpdates() {
             if (!updateInterval) {
-                updateInterval = setInterval(updateTelemetry, 50); // 20 FPS
-                console.log('🚀 Started high-frequency telemetry updates via Express proxy');
+                // Adjust update frequency based on device type
+                const updateFrequency = isMobileDevice() ? 75 : 50; // Slightly lower frequency for mobile
+                updateInterval = setInterval(updateTelemetry, updateFrequency);
+                
+                console.log(`🚀 Started high-frequency telemetry updates via Express proxy (${1000/updateFrequency}fps)`);
+                if (isMobileDevice()) {
+                    console.log('📱 Using mobile-optimized update frequency');
+                }
             }
         }
 
         // Initialize on page load
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             console.log('⚡ AC Live Telemetry Dashboard loaded');
+            
+            // Fetch host information dynamically
+            await fetchHostInfo();
+            
             console.log('🎯 Ready for high-frequency real-time updates via Express.js');
             updateConnectionStatus();
             
             // Auto-start updates
             startUpdates();
+            
+            // Mobile-specific initialization
+            if (isMobileDevice()) {
+                console.log('📱 Mobile device detected - enabling mobile optimizations');
+                initializeMobileFeatures();
+            }
         });
+
+        // Initialize mobile-specific features
+        function initializeMobileFeatures() {
+            // Prevent bounce scrolling on iOS
+            document.addEventListener('touchmove', function(e) {
+                if (isFullscreenMode) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            // Handle viewport changes for mobile keyboards
+            window.addEventListener('resize', function() {
+                if (isFullscreenMode) {
+                    // Recalculate viewport on resize
+                    const vh = window.innerHeight * 0.01;
+                    document.documentElement.style.setProperty('--vh', `${vh}px`);
+                }
+            });
+            
+            // Set initial viewport height
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            
+            // Add touch event handling
+            let touchStartY = 0;
+            document.addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+            });
+            
+            document.addEventListener('touchmove', function(e) {
+                if (isFullscreenMode) {
+                    const touchY = e.touches[0].clientY;
+                    const touchDiff = touchStartY - touchY;
+                    
+                    // Prevent overscroll
+                    if (touchDiff < 0 && window.scrollY === 0) {
+                        e.preventDefault();
+                    }
+                }
+            }, { passive: false });
+        }
 
         // Handle escape key to exit fullscreen
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape' && isFullscreenMode) {
                 toggleFullscreen();
+            }
+            
+            // Ctrl+R to refresh host info (for debugging)
+            if (event.ctrlKey && event.key === 'r') {
+                event.preventDefault();
+                refreshHostInfo();
             }
         });
 
@@ -1152,13 +1621,15 @@
                 // Reduce update frequency when tab is not visible
                 if (updateInterval) {
                     clearInterval(updateInterval);
-                    updateInterval = setInterval(updateTelemetry, 200); // 5 FPS when hidden
+                    const hiddenFrequency = isMobileDevice() ? 500 : 200; // Even lower for mobile when hidden
+                    updateInterval = setInterval(updateTelemetry, hiddenFrequency);
                 }
             } else {
                 // Restore high frequency when tab is visible
                 if (updateInterval) {
                     clearInterval(updateInterval);
-                    updateInterval = setInterval(updateTelemetry, 50); // 20 FPS when visible
+                    const activeFrequency = isMobileDevice() ? 75 : 50;
+                    updateInterval = setInterval(updateTelemetry, activeFrequency);
                 }
             }
         });
