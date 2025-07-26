@@ -26,3 +26,4 @@ npm install
 ```bash
 npm start
 ```
+The open http://localhost:3000
